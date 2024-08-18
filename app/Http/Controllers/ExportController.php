@@ -12,75 +12,69 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportController extends Controller
 {
-    public function exportExcel(Request $request)
-    {
+    public function exportExcel(Request $request) {
         $cacheKey = 'tasks_excel_' . md5(serialize($request->all()));
-        $tasks = Cache::remember($cacheKey, now()->addMinutes(10), function() use ($request) {
+        if (empty($request->input('task_status')) && empty($request->input('conclusion_date'))) {
+            return redirect()->route('project.index')->withErrors(['error' => 'Pelo menos um dos campos deve ser preenchido.']);
+        }
+        $filePath = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $sheet->setTitle('Tasks');
+
             $query = Task::query();
-            $status = $request->input('status');
-            if ($status) {
+            $status = $request->input('task_status') == 'em_progresso' ?  str_replace('_', ' ', $request->input('task_status')) : $request->input('task_status');
+            $conclusionDate = $request->input('conclusion_date');
+
+            if ($status){
                 $query->where('status', $status);
             }
-
-            $dateStart = $request->input('date_start');
-            $dateEnd = $request->input('date_end');
-            if ($dateStart && $dateEnd) {
-                $query->whereBetween('created_at', [$dateStart, $dateEnd]);
+            if ($conclusionDate){
+                $query->where('conclusion_date', $conclusionDate);
             }
 
-            $query = $query->get();
+            $tasks = $query->get();
+            $headers = ['id', 'Titulo', 'Descrição', 'Estado','Previsao', 'Entrega'];
+            $sheet->fromArray($headers);
 
+            $row = 2;
+
+            foreach ($tasks as $task) {
+                $sheet->setCellValue("A" . $row, $task->id);
+                $sheet->setCellValue("B" . $row, $task->getTitle());
+                $sheet->setCellValue("C" . $row, $task->getDescription());
+                $sheet->setCellValue("D" . $row, $task->getStatus());
+                $sheet->setCellValue("E" . $row, $task->getDueDate());
+                $sheet->setCellValue("F" . $row, $task->getConclusionDate());
+                $row++;
+            }
+
+            $writer = new Xlsx($spreadsheet);
+
+            $filePath = storage_path('app/public/exports/tasks.xlsx');
+            $writer->save($filePath);
+
+            return $filePath;
         });
 
-        if (is_null($tasks)) {
-            return redirect()->route('project.index')->with('error', 'Sem arquivos!');
-        }
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->setCellValue('A1', 'ID');
-        $sheet->setCellValue('B1', 'Title');
-        $sheet->setCellValue('C1', 'Descrição');
-        $sheet->setCellValue('D1', 'Status');
-        $sheet->setCellValue('E1', 'Data Finalizado');
-        $sheet->setCellValue('F1', 'Ultima Atualização');
-
-        $row = 2;
-
-        foreach ($tasks as $task) {
-            $sheet->setCellValue('A' . $row, $task->id);
-            $sheet->setCellValue('B' . $row, $task->getTitle());
-            $sheet->setCellValue('C' . $row, $task->getDescription());
-            $sheet->setCellValue('D' . $row, $task->getStatus());
-            $sheet->setCellValue('E' . $row, $task->getDueDate());
-            $sheet->setCellValue('F' . $row, $task->created_at);
-            $row++;
-        }
-
-        $writer = new Xlsx($spreadsheet);
-
-        $response = new StreamedResponse(function () use ($writer) {
-            $writer->save('php://output');
-        });
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $response->headers->set('Content-Disposition', 'attachment;filename="tasks.xlsx"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
+        return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
     public function exportPdf(Request $request){
         $cacheKey = 'tasks_pdf_' . md5(serialize($request->all()));
+        if (empty($request->input('task_status')) && empty($request->input('conclusion_date'))) {
+            return redirect()->route('project.index')->withErrors(['error' => 'Pelo menos um dos campos deve ser preenchido.']);
+        }
+
         $data = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
             $query = Task::query();
-            $status = $request->input('status');
-            if ($status) {
+            $status = $request->input('task_status') == 'em_progresso' ?  str_replace('_', ' ', $request->input('task_status')) : $request->input('task_status');
+            $conclusionDate = $request->input('conclusion_date');
+            if ($status){
                 $query->where('status', $status);
             }
-            $dateStart = $request->input('date_start');
-            $dateEnd = $request->input('date_end');
-            if ($dateStart && $dateEnd) {
-                $query->whereBetween('created_at', [$dateStart, $dateEnd]);
+            if ($conclusionDate){
+                $query->where('conclusion_date', $conclusionDate);
             }
 
             $tasks = $query->get();
@@ -91,10 +85,11 @@ class ExportController extends Controller
             foreach ($tasks as $task) {
                 $data[] = [
                     'id' => $task->id,
-                    'Titulo' => $task->title,
-                    'Descrição' => $task->description,
-                    'Estado' => $task->status,
-                    'Data' => $task->due_date
+                    'Titulo' => $task->getTitle(),
+                    'Descrição' => $task->getDescription(),
+                    'Estado' => $task->getStatus(),
+                    'Previsao' => $task->getDueDate(),
+                    'Entrega' => $task->getConclusionDate(),
                 ];
             }
 

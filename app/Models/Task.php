@@ -14,6 +14,7 @@ class Task extends Model
         'description',
         'status',
         'due_date',
+        'conclusion_date',
         'projects_id',
         'assigned_to',
     ];
@@ -48,6 +49,14 @@ class Task extends Model
 
     public function setDueDate($due_date){
         return $this->setAttribute('due_date', $due_date);
+    }
+
+    public function getConclusionDate(){
+        return $this->getAttribute('conclusion_date');
+    }
+
+    public function setConclusionDate($conclusion_date){
+        return $this->setAttribute('conclusion_date', $conclusion_date);
     }
 
     public function setProjectsId($projectId){

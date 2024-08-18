@@ -52,14 +52,15 @@ class TaskController extends Controller
         return view('task.edit',  [
             'task' => $task,
             'users' => User::all(),
-            'projects' => Projects::all()
+            'projects' => Projects::all(),
+            'statuses' => ['pendente', 'em progresso', 'concluido']
         ]);
     }
     public function update(Request $request, Task $task) {
         $request->validate([
             'task_title' => 'required|string|max:255',
             'task_description' => 'required|string|max:500',
-            'due_date' => 'required|date', // Corrigido: removido o max:500
+            'due_date' => 'required|date',
         ]);
         $task->update([
             'title' => $request->input('task_title'),
@@ -67,6 +68,8 @@ class TaskController extends Controller
             'due_date' => $request->input('due_date'),
             'project_id' => $request->input('project_id'),
             'assigned_to' => $request->input('assigned_to'),
+            'status' => $request->input('task_status'),
+            'conclusion_date' => $request->input('task_status') == 'concluido' ? now()->toDateString() : '',
         ]);
         $user = User::findOrFail($request->get('assigned_to'));
         try {

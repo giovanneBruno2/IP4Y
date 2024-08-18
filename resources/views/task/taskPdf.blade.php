@@ -23,7 +23,8 @@
         <th>Título</th>
         <th>Descrição</th>
         <th>Estado</th>
-        <th>Data</th>
+        <th>Previsao</th>
+        <th>Entrega</th>
     </tr>
     </thead>
     <tbody>
@@ -33,7 +34,8 @@
             <td>{{ $task['Titulo'] }}</td>
             <td>{{ $task['Descrição'] }}</td>
             <td>{{ $task['Estado'] }}</td>
-            <td>{{ $task['Data'] }}</td>
+            <td>{{ $task['Previsao'] }}</td>
+            <td>{{ $task['Entrega'] }}</td>
         </tr>
     @endforeach
     </tbody>

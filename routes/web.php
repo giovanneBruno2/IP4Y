@@ -39,8 +39,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/project/export/{type}', [TaskController::class, 'exportTasks'])->name('task.exportTasks');
     });
 
-    Route::get('/export-excel', [ExportController::class, 'exportExcel'])->name('export.excel');
-    Route::get('/export-pdf', [ExportController::class, 'exportPDF'])->name('export.pdf');
+    Route::post('/export-excel', [ExportController::class, 'exportExcel'])->name('export.excel');
+    Route::post('/export-pdf', [ExportController::class, 'exportPDF'])->name('export.pdf');
 
 });
 

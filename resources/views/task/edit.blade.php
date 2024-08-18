@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <a href="{{route('project.index')}}" class="btn btn-secondary mb-3 mt-2">Cancelar Criação</a>
+                <a href="{{route('project.index')}}" class="btn btn-secondary mb-3 mt-2">Voltar</a>
             </div>
             <div class="col-6">
                 <form action="{{route('task.update', $task->id)}}" method="POST" >
@@ -43,6 +43,17 @@
                                     <option value="{{$user->id}}" selected>{{$user->name}}</option>
                                 @else
                                     <option value="{{$user->id}}">{{$user->name}}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label for="project" class="form-label">Status</label>
+                        <select class="form-control" id="task_status" name="task_status" aria-label="Default select example" required>
+                            <option value="{{$task->getStatus()}}" selected>{{ucfirst($task->getStatus())}}</option>
+                            @foreach($statuses as $status)
+                                @if($status !== $task->getStatus())
+                                    <option value="{{ $status }}">{{ ucfirst($status) }}</option>
                                 @endif
                             @endforeach
                         </select>

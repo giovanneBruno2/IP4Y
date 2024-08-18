@@ -48,39 +48,33 @@
                 </tbody>
             </table>
             <div class="col-6">
+                <form action="{{route('export.pdf')}}" method="POST" >
+                @csrf
                 <label for="inputState">Exportar Tarefas em PDF</label>
-                <select id="inputState" class="form-control inputState">
+                <select id="inputState" name="task_status" class="form-control">
                     <option selected></option>
-                    <option value="{{route('export.pdf', ['status' => 'concluido'])}}">Concluida</option>
-                    <option value="{{route('export.pdf', ['status' => 'pendente'])}}">Pendente</option>
-                    <option value="{{route('export.pdf', ['status' => 'em progresso'])}}">Em Progresso</option>
+                    <option value="concluido">Concluida</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="em_progresso">Em Progresso</option>
                 </select>
-                <form>
-                    <input class="form-control mt-2" id="due_date"  type="date" name="due_date" value="" required >
+                    <input class="form-control mt-2" id="due_date"  type="date" name="conclusion_date" value="" >
+                    <button class="btn btn-primary mt-1" id="btn" type="submit">Exportar</button>
                 </form>
             </div>
             <div class="col-6">
-                <label for="inputState">Exportar Tarefas em Excel</label>
-                <select id="inputState" class="form-control inputState">
-                    <option selected></option>
-                    <option value="{{route('export.excel', ['status' => 'concluido'])}}">Concluida</option>
-                    <option value="{{route('export.excel', ['status' => 'pendente'])}}">Pendente</option>
-                    <option value="{{route('export.excel', ['status' => 'em progresso'])}}">Em Progresso</option>
-                </select>
+                <form action="{{route('export.excel')}}" method="POST" >
+                    @csrf
+                    <label for="inputState">Exportar Tarefas em Excel</label>
+                    <select id="inputState" name="task_status" class="form-control">
+                        <option selected></option>
+                        <option value="concluido">Concluida</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="em_progresso">Em Progresso</option>
+                    </select>
+                    <input class="form-control mt-2" id="due_date"  type="date" name="conclusion_date" value="" >
+                    <button class="btn btn-primary mt-1" id="btn" type="submit">Exportar</button>
+                </form>
             </div>
         </div>
     </div>
 @endsection
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelectorAll('.inputState').forEach(function(element) {
-            element.addEventListener('change', function() {
-                var selectedValue = this.value;
-                if (selectedValue) {
-                    window.location.href = selectedValue;
-                }
-            });
-        });
-    });
-</script>

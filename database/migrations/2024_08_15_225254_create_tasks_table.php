@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('status', ['pendente', 'em progresso', 'concluido']);
             $table->date('due_date');
+            $table->date('conclusion_date');
             $table->foreignId('projects_id')->constrained()->onDelete('cascade');
             $table->foreignId('assigned_to')->constrained('users')->onDelete('cascade');
             $table->timestamps();
