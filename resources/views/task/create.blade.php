@@ -1,60 +1,47 @@
+@extends('layouts.app')
 
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="flex">
-                    <form method="POST"  action="{{route('task.store')}}">
-                        @csrf
-
-                        <!-- Email Address -->
-                        <div>
-                            <x-input-label for="title" :value="__('Titulo')" />
-                            <x-text-input id="title" class="block mt-1 w-full" type="text" name="task_title" value="" required autofocus autocomplete="title" />
-                        </div>
-
-                        <!-- Descrição -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Descrição')" />
-                            <x-text-input id="desc" class="block mt-1 w-full" type="text" name="task_description" value="" required autofocus autocomplete="title" />
-                        </div>
-
-
-                        <!-- Data -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Data Vencimento')" />
-                            <x-text-input id="desc" class="block mt-1 w-full" type="text" name="due_date" value="" required autofocus autocomplete="title" />
-                        </div>
-
-                        <!-- Projeto -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Projeto')" />
-                            @foreach($projects as $project)
-                                <x-text-input id="desc" class="block mt-1 w-full" type="hidden" readonly="true"  name="project_id" :value="$project->id" required autofocus autocomplete="title" />
-                                <x-text-input id="desc" class="block mt-1 w-full" type="text" name="project" :value="$project->project_title" required autofocus autocomplete="title" />
-                            @endforeach
-                        </div>
-
-                        <!-- User -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Usuario')" />
-                            @foreach($users as $user)
-                                <x-text-input id="desc" class="block mt-1 w-full" type="text" name="assigned_to" :value="$user->id" required autofocus autocomplete="title" />
-                            @endforeach
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <x-primary-button class="ms-3">
-                                {{ __('Salvar Projeto') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
-                </div>
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <a href="{{route('project.index')}}" class="btn btn-secondary mb-3 mt-2">Voltar</a>
             </div>
-</x-app-layout>
+            <div class="col-6">
+                <form action="{{route('task.store')}}" method="POST" >
+                    @csrf
+
+                    <div class="mb-2">
+                        <label for="ds_name" class="form-label">{{__('Titulo')}}</label>
+                        <input class="form-control" id="task_title" required  type="text" name="task_title" value="" autofocus>
+                    </div>
+                    <div class="mb-2">
+                        <label for="ds_url" class="form-label">{{__('Descrição')}}</label>
+                        <input class="form-control" id="task_description"  type="text" name="task_description" value="" required >
+                    </div>
+                    <div class="mb-2">
+                        <label for="ds_url" class="form-label">{{__('Data Vencimento')}}</label>
+                        <input class="form-control" id="due_date"  type="date" name="due_date" value="" required >
+                    </div>
+                    <div class="mb-2">
+                        <label for="project" class="form-label">Projeto</label>
+                        <select class="form-control" id="project_id" name="project_id" aria-label="Default select example" required>
+                            @foreach($projects as $project)
+                            <option value="{{$project->id}}">{{$project->getProjectTitle()}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label for="project" class="form-label">Usuario</label>
+                        <select class="form-control" id="assigned_to" name="assigned_to" aria-label="Default select example" required>
+                            @foreach($users as $user)
+                            <option value="{{$user->id}}">{{$user->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <button class="btn btn-primary mt-1" id="btn" type="submit">Salvar</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+@endsection

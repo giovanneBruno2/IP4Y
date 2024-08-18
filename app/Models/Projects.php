@@ -11,6 +11,7 @@ class Projects extends Model
     protected $fillable = [
         'project_title',
         'description',
+        'completion_dates',
     ];
     public function getId() {
         $this->getAttribute('id');
@@ -36,12 +37,12 @@ class Projects extends Model
         $this->setAttribute('description', $description);
     }
 
-    public function getDate(){
-        return $this->getAttribute('date');
+    public function getCompletationDate(){
+        return $this->getAttribute('completion_dates');
     }
 
-    public function setDate($date) {
-        $this->setAttribute('date', $date);
+    public function setCompletationDate($date) {
+        $this->setAttribute('completion_dates', $date);
     }
 
     public function tasks()

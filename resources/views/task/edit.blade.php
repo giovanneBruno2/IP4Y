@@ -1,66 +1,56 @@
+@extends('layouts.app')
 
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <a href="{{route('project.index')}}" class="btn btn-secondary mb-3 mt-2">Cancelar Criação</a>
+            </div>
+            <div class="col-6">
+                <form action="{{route('task.update', $task->id)}}" method="POST" >
+                    @csrf
+                    @method('patch')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="flex">
-                    <form action="{{ route('task.update', $task->id) }}" method="POST" >
-                        @csrf
-                        @method('patch')
-
-                        <!-- Email Address -->
-                        <div>
-                            <x-input-label for="title" :value="__('Titulo')" />
-                            <x-text-input id="title" class="block mt-1 w-full" type="text" name="task_title" :value="$task->title" required autofocus autocomplete="title" />
-                        </div>
-
-                        <!-- Descrição -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Descrição')" />
-                            <x-text-input id="desc" class="block mt-1 w-full" type="text" name="task_description" :value="$task->description" required autofocus autocomplete="title" />
-                        </div>
-
-
-                        <!-- Data -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Data Vencimento')" />
-                            <x-text-input id="desc" class="block mt-1 w-full" type="text" name="due_date" :value="$task->due_date" required autofocus autocomplete="title" />
-                        </div>
-
-                        <!-- Projeto -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Projeto')" />
+                    <div class="mb-2">
+                        <label for="ds_name" class="form-label">{{__('Titulo')}}</label>
+                        <input class="form-control" id="task_title" required  type="text" name="task_title" value="{{$task->getTitle()}}" autofocus>
+                    </div>
+                    <div class="mb-2">
+                        <label for="ds_url" class="form-label">{{__('Descrição')}}</label>
+                        <input class="form-control" id="task_description"  type="text" name="task_description" value="{{$task->getDescription()}}" required >
+                    </div>
+                    <div class="mb-2">
+                        <label for="ds_url" class="form-label">{{__('Data Vencimento')}}</label>
+                        <input class="form-control" id="due_date"  type="date" name="due_date" value="{{$task->getDueDate()}}" required >
+                    </div>
+                    <div class="mb-2">
+                        <label for="project" class="form-label">Projeto</label>
+                        <select class="form-control" id="project_id" name="project_id" aria-label="Default select example" required>
                             @foreach($projects as $project)
-                                @if($project->id == $task->projects_id)
-                                <x-text-input id="desc" class="block mt-1 w-full" type="hidden" readonly="true"  name="project_id" :value="$project->id" required autofocus autocomplete="title" />
-                                <x-text-input id="desc" class="block mt-1 w-full" readonly="true" type="text" name="project" :value="$project->project_title" required autofocus autocomplete="title" />
+                                @if($project->id == $task->getProjectId())
+                                    <option value="{{$project->id}}" selected>{{$project->getProjectTitle()}}</option>
                                 @else
-                                <x-text-input id="desc" class="block mt-1 w-full" type="hidden" readonly="true"  name="project_id" :value="$project->id" required autofocus autocomplete="title" />
-                                <x-text-input id="desc" class="block mt-1 w-full" type="text" name="project" :value="$project->project_title" required autofocus autocomplete="title" />
+                                    <option value="{{$project->id}}">{{$project->getProjectTitle()}}</option>
                                 @endif
                             @endforeach
-                        </div>
-
-                        <!-- User -->
-                        <div class="mt-4">
-                            <x-input-label for="desc" :value="__('Usuario')" />
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label for="project" class="form-label">Usuario</label>
+                        <select class="form-control" id="assigned_to" name="assigned_to" aria-label="Default select example" required>
                             @foreach($users as $user)
-                                <x-text-input id="desc" class="block mt-1 w-full" type="text" name="assigned_to" :value="$user->id" required autofocus autocomplete="title" />
+                                @if($user->id == $task->getAssignedTo())
+                                    <option value="{{$user->id}}" selected>{{$user->name}}</option>
+                                @else
+                                    <option value="{{$user->id}}">{{$user->name}}</option>
+                                @endif
                             @endforeach
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <x-primary-button class="ms-3">
-                                {{ __('Salvar Edicao') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
-                </div>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary mt-1" id="btn" type="submit">Salvar</button>
+                </form>
             </div>
-</x-app-layout>
+
+        </div>
+    </div>
+@endsection

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id()->primary()->autoIncrement();
             $table->string('project_title');
             $table->string('description');
-            $table->string('completion_dates')->nullable();
+            $table->date('completion_dates')->nullable();
             $table->integer('qtd_task')->nullable();
             $table->timestamps();
         });

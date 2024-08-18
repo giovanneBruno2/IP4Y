@@ -35,7 +35,7 @@ class TaskController extends Controller
             $task->setTitle($request->get('task_title'));
             $task->setDescription($request->get('task_description'));
             $task->setStatus('pendente');
-            $task->setDueDate('2024-08-15 23:57:01');
+            $task->setDueDate($request->get('due_date'));
             $task->setProjectsId($request->get('project_id'));
             $task->setAssignedTo($request->get('assigned_to'));
             $task->save();

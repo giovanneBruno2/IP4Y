@@ -69,11 +69,13 @@ class ProjectsController extends Controller
             'project_title' => 'required|string|max:255',
             'description' => 'required|string|max:500',
         ]);
+
         $project->update([
             'project_title' => $request->input('project_title'),
             'description' => $request->input('description'),
+            'completion_dates' => $request->input('completion_dates') == 'no' ? '' : now()->format('Y-m-d'),
         ]);
-        return redirect()->route('project.index')->with('success', 'Project  updated successfully!');;
+        return redirect()->route('project.index')->with('success', 'Project  updated successfully!');
         //
     }
 
@@ -82,7 +84,11 @@ class ProjectsController extends Controller
      */
     public function destroy(Projects $project)
     {
-        $project->delete();
-        return redirect()->route('project.index')->with('success', 'Project  updated successfully!');;
+        try {
+            $project->delete();
+            return redirect()->route('project.index')->with('success', 'Project  Deletado corretamente!');
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete project.'], 500);
+        }
     }
 }

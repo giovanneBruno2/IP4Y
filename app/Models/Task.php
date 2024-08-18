@@ -54,7 +54,7 @@ class Task extends Model
         return $this->setAttribute('projects_id', $projectId);
     }
 
-    public function getProjecstId(){
+    public function getProjectId(){
         return $this->getAttribute('projects_id');
     }
 
